@@ -7,8 +7,8 @@ previous_frame = current_frame
 while(cap.isOpened()):
     current_frame_gray = cv2.cvtColor(current_frame, cv2.COLOR_BGR2GRAY)
     previous_frame_gray = cv2.cvtColor(previous_frame, cv2.COLOR_BGR2GRAY)    
-    cv2.GaussianBlur(current_frame_gray,(5, 5), 3)
-    cv2.GaussianBlur(previous_frame_gray,(5, 5), 3)
+    current_frame_gray = cv2.GaussianBlur(current_frame_gray,(5, 5), 3)
+    previous_frame_gray = cv2.GaussianBlur(previous_frame_gray,(5, 5), 3)
     frame_diff = cv2.absdiff(current_frame_gray,previous_frame_gray)
     new_frame = cv2.resize(frame_diff,(1400, 720))
     cv2.imshow('frame diff ',new_frame)      
