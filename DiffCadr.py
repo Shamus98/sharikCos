@@ -16,13 +16,20 @@ m_prev = current_frame
 
 
 while(cap.isOpened()):    
-    m = cv2.add(cv2.multiply(0.9,m_prev), cv2.multiply(0.1,current_frame))
+    m = cv2.add(cv2.multiply(0.25,m_prev), cv2.multiply(0.75,current_frame))
     frame_diff = cv2.absdiff(m, current_frame)
-    new_frame = cv2.resize(frame_diff,(128, 128))
-    new_frame2 = cv2.resize(current_frame,(128,128))
-    ret2,th2 = cv2.threshold(new_frame,0,255,cv2.THRESH_BINARY)
+    diff = cv2.absdiff(previous_frame, current_frame)
+    new_frame = cv2.resize(frame_diff,(256, 256))
+    new_frame2 = cv2.resize(current_frame,(256,256))
+    new_frame3 = cv2.resize(diff,(256,256))
+    new_frame4 = cv2.resize(m, (256,256))
+    ret2,th2 = cv2.threshold(new_frame,0,255,cv2.THRESH_BINARY+cv2.ADAPTIVE_THRESH_MEAN_C )
+    ret3,th3 = cv2.threshold(new_frame3,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
     cv2.imshow('frame diff ',th2)
-    cv2.imshow('video', new_frame2)      
+    cv2.imshow('m', new_frame4)
+    #cv2.imshow('video', new_frame2)
+    #cv2.imshow('diff', new_frame3)
+    cv2.imshow('binary', th3)      
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
