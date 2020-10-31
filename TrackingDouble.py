@@ -7,6 +7,8 @@ ret, frame1 = cap.read()
 ret, frame2 = cap.read()
 pts = []
 k = 0
+boole = False
+count = 0
 def non_max_suppression_fast(boxes, overlapThresh):
 	# if there are no boxes, return an empty list
 	if len(boxes) == 0:
@@ -20,8 +22,8 @@ def non_max_suppression_fast(boxes, overlapThresh):
 	# grab the coordinates of the bounding boxes
 	x1 = boxes[:,0]
 	y1 = boxes[:,1]
-	x2 = boxes[:,2]
-	y2 = boxes[:,3]
+	x2 = boxes[:,2] + boxes[:,0]
+	y2 = boxes[:,3] + boxes[:,1]
 	# compute the area of the bounding boxes and sort the bounding
 	# boxes by the bottom-right y-coordinate of the bounding box
 	area = (x2 - x1 + 1) * (y2 - y1 + 1)
@@ -76,10 +78,17 @@ while cap.isOpened():
     color = (255,0,255)
     maxbox = non_max_suppression_fast(np.array(boundRect), .95)
     for i in range(len(maxbox)):
-      cv2.rectangle(frame1, (maxbox[i][0], maxbox[i][1]), \
+      if maxbox[i][2] > 40 and maxbox[i][3] > 40:
+        cv2.rectangle(frame1, (maxbox[i][0], maxbox[i][1]), \
               (maxbox[i][0]+maxbox[i][2], maxbox[i][1]+maxbox[i][3]), color, 8)
+        if maxbox[i][0] < 200 and boole == False:
+          count += 1
+          boole = True
+        elif maxbox[i][0] > 400 and boole == True:
+          boole = False
     frame256 = cv2.resize(frame1, (512,512))
     frame228 = cv2.resize(thresh, (512,512))
+    cv2.putText(frame256, str(count), (20,20), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
     cv2.imshow("feed", frame256)
     cv2.imshow("thresh", frame228)
     frame1 = frame2
