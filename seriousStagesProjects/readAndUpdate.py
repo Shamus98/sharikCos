@@ -7,14 +7,14 @@ import os
 cap = cv2.VideoCapture('./Desktop/Openc/SVO_03-04/svo_oct05-04.mov')
 ret, frame1 = cap.read()
 ret, frame2 = cap.read()
-pts = []
+maxbox_f = []
 k = 0
 boole = False
+count0_1 = False
 count = 0
 files = 0
-Count = 0
 countValues = 0
-os.mkdir('./Desktop/Openc/SVO-20201005-DXXX-04/SVO-20201005-DXXX-04-0000')
+os.mkdir('./Desktop/Openc/SVO-20201005-DXXX-04XX/SVO-20201005-DXXX-04-0000')
 def non_max_suppression_fast(boxes, overlapThresh):
 	# if there are no boxes, return an empty list
 	if len(boxes) == 0:
@@ -82,33 +82,39 @@ while cap.isOpened():
       boundRect[i] = cv2.boundingRect(c)
 
     color = (255,0,255)
-    countValues += 1 
     maxbox = non_max_suppression_fast(np.array(boundRect), .95)
+
+
     for i in range(len(maxbox)):
-      if maxbox[i][2] > 40 and maxbox[i][3] > 40 and not(maxbox[i][0]>0 and maxbox[i][0] <= 400 and maxbox[i][1]>0 and maxbox[i][1]<=400):
-        #cv2.rectangle(frame1, (maxbox[i][0], maxbox[i][1]), \
-        #      (maxbox[i][0]+maxbox[i][2], maxbox[i][1]+maxbox[i][3]), color, 8) 
-        if maxbox[i][0] < 200 and boole == False:
-          count += 1
-          boole = True
-        elif maxbox[i][0] > 400 and boole == True:
-          boole = False
-        frame256 = cv2.resize(frame1, (512,512))
-        frame228 = cv2.resize(thresh, (512,512))
+      if maxbox[i][2] > 20 and maxbox[i][3] > 20 and not(maxbox[i][0]>0 and maxbox[i][0] <= 380 and maxbox[i][1]>0 and maxbox[i][1]<=200) :
+        maxbox_f.append(maxbox[i])
+        cv2.rectangle(frame1, (maxbox[i][0], maxbox[i][1]), \
+              (maxbox[i][0]+maxbox[i][2], maxbox[i][1]+maxbox[i][3]), color, 4)
+        countValues += 1
+    if countValues == 0:
+      count0_1 = True
+
+
+    if len(maxbox_f) > 0 and countValues > 0:  
+      frame256 = cv2.resize(frame1, (512,512))
+      frame228 = cv2.resize(thresh, (512,512))
         #cv2.putText(frame256, str(count), (20,20), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
-        cv2.imshow("feed", frame256)
-        cv2.imshow("thresh", frame228)
-        if countValues > 60:
-            print("Следующее видео" + str(files))
-            os.mkdir('./Desktop/Openc/SVO-20201005-DXXX-04/SVO-20201005-DXXX-04-{:04d}'.format(files+1))
-            files += 1 
-            Count = 0
-            print(countValues)
-        path = './Desktop/Openc/SVO-20201005-DXXX-04/SVO-20201005-DXXX-04-{:04d}/frame{:d}.jpg'.format(files, Count)
-        cv2.imwrite(path, frame1)
-        Count += 1
+      cv2.imshow("feed", frame256)
+      cv2.imshow("thresh", frame228)
+      if count0_1 == True:  # счетчик, который проверяет были до ббоксов  ббокс
+        print("Следующее видео" + str(files))
+        os.mkdir('./Desktop/Openc/SVO-20201005-DXXX-04XX/SVO-20201005-DXXX-04-{:04d}'.format(files+1))
+        files += 1 
+        count = 0
+        count0_1 = False
+      print(countValues)
+      path = './Desktop/Openc/SVO-20201005-DXXX-04XX/SVO-20201005-DXXX-04-{:04d}/frame{:d}.jpg'.format(files, count)
+      cv2.imwrite(path, frame1)
+      count += 1
         #cap.set(1, Count)
-        countValues = 0      
+      countValues = 0   
+
+
     frame1 = frame2
     ret, frame2 = cap.read()
     if cv2.waitKey(1) & 0xFF == ord('q'):
