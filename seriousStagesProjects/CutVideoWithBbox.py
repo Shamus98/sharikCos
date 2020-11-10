@@ -5,7 +5,7 @@ import time
 cap = cv2.VideoCapture('./Desktop/Openc/SVO_03-04/svo_oct05-04.mov')
 ret, frame1 = cap.read()
 first_frame_count = 0
-maxbox_if = []
+
 
 
 ########################################################################################################
@@ -59,6 +59,7 @@ def non_max_suppression_fast(boxes, overlapThresh):
 
 
 while cap.isOpened():
+    maxbox_if = []
     first_frame_count += 1
     if first_frame_count == 1:
       fac = frame1
@@ -79,7 +80,7 @@ while cap.isOpened():
     maxbox = non_max_suppression_fast(np.array(boundRect), .95)
 
     for i in range(len(maxbox)):
-      if maxbox[i][2] > 40 and maxbox[i][3] > 40:
+      if (maxbox[i][2] > 20 and maxbox[i][3] > 20):
           maxbox_if.append(maxbox[i])
 
     for i in range(len(maxbox_if)):
